@@ -1,35 +1,26 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
 	"os"
+
+	"github.com/tanay13/GlitchMesh/internal/commands"
+	"github.com/tanay13/GlitchMesh/internal/constants"
 )
 
 func main() {
 	cliArguments := os.Args[1:]
 
-	if len(cliArguments) >= 2 && cliArguments[0] == "start" {
-		switch cliArguments[1] {
-		case "server":
-			runServer()
-		default:
-			fmt.Println("Unknown command:", cliArguments[1])
-		}
-	} else {
-		fmt.Println("Usage: go run main.go start server")
+	if len(cliArguments) < 2 {
+		printUsage()
+	}
+
+	cmd := cliArguments[0]
+	args := cliArguments[1:]
+
+	switch cmd {
+	case constants.CMD_START:
+		commands.HandleStart(args)
 	}
 }
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hi from GlitchMesh!"))
-}
-
-func runServer() {
-	fmt.Println("Server running on http://localhost:9000")
-	http.HandleFunc("/", homeHandler)
-	err := http.ListenAndServe(":9000", nil)
-	if err != nil {
-		fmt.Println("Server error:", err)
-	}
-}
+func printUsage() {}
