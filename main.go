@@ -11,7 +11,8 @@ func main() {
 	cliArguments := os.Args[1:]
 
 	if len(cliArguments) < 2 {
-		printUsage()
+		PrintUsage()
+		os.Exit(0)
 	}
 
 	cmd := cliArguments[0]
@@ -20,7 +21,10 @@ func main() {
 	switch cmd {
 	case constants.CMD_START:
 		commands.HandleStart(args)
+
+	case constants.CMD_APPLY:
+		commands.HandleApply(args)
 	}
 }
 
-func printUsage() {}
+func PrintUsage() {}
