@@ -1,13 +1,22 @@
 package main
 
 import (
+	"log"
 	"os"
 
 	"github.com/tanay13/GlitchMesh/internal/commands"
+	"github.com/tanay13/GlitchMesh/internal/config"
 	"github.com/tanay13/GlitchMesh/internal/constants"
 )
 
 func main() {
+
+	_, err := config.Load("config.json")
+
+	if err != nil {
+		log.Fatalf("Error loading config %v", err)
+	}
+
 	cliArguments := os.Args[1:]
 
 	if len(cliArguments) < 2 {

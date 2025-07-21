@@ -11,23 +11,16 @@ import (
 type T struct {
 	Service struct {
 		Name  string
+		Url   string
 		Fault string
 		Value string
 	}
 }
 
-var data = `
-service:
- name: auth-service
- fault: latency
- value: 2000
-`
-
 func ParseYaml(filepath string) {
 	t := T{}
 	data, err := os.ReadFile(filepath)
-	
-	if err!= nil{
+	if err != nil {
 		log.Fatalf("error: %v", err)
 	}
 

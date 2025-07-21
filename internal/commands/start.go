@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/tanay13/GlitchMesh/internal/constants"
+	"github.com/tanay13/GlitchMesh/internal/router"
 )
 
 func HandleStart(args []string) {
@@ -14,13 +15,10 @@ func HandleStart(args []string) {
 	}
 }
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hi from GlitchMesh!"))
-}
-
 func startServer() {
-	fmt.Println("Server running on http://localhost:9000")
-	http.HandleFunc("/", homeHandler)
+	fmt.Println("Proxy server running on port 9000")
+	http.HandleFunc("/", router.HomeHandler)
+	http.HandleFunc("/redirect/", router.RedirectRequest)
 	err := http.ListenAndServe(":9000", nil)
 	if err != nil {
 		fmt.Println("Server error:", err)
