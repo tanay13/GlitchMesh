@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/tanay13/GlitchMesh/internal/config"
 	"github.com/tanay13/GlitchMesh/internal/utils"
 )
 
@@ -14,6 +15,6 @@ func HandleApply(args []string) {
 	}
 
 	filePath := args[0]
-  os.Setenv()
+	os.Setenv(config.Configs.Env.YAML_FILE_PATH, filePath)
 	utils.ParseYaml(filePath)
 }

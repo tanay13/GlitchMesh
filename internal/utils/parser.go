@@ -2,32 +2,22 @@ package utils
 
 import (
 	"fmt"
-	"log"
 	"os"
 
+	"github.com/tanay13/GlitchMesh/internal/models"
 	"gopkg.in/yaml.v3"
 )
 
-type T struct {
-	Service struct {
-		Name  string
-		Url   string
-		Fault string
-		Value string
-	}
-}
-
-func ParseYaml(filepath string) {
-	t := T{}
+func ParseYaml(filepath string) (*models.Proxy, error) {
+	t := models.Proxy{}
 	data, err := os.ReadFile(filepath)
 	if err != nil {
-		log.Fatalf("error: %v", err)
+		return nil, fmt.Errorf("error while reading the file: %v", err)
 	}
 
 	err = yaml.Unmarshal([]byte(data), &t)
 	if err != nil {
-		log.Fatalf("error: %v", err)
+		return nil, fmt.Errorf("error while parsing yaml: %v", err)
 	}
-	fmt.Printf("--- t:\n%+v\n\n", t)
-	fmt.Println(t.Service.Value)
+	return &t, nil
 }

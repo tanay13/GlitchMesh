@@ -11,5 +11,4 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 func RedirectRequest(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/redirect/")
-
 }
