@@ -3,6 +3,8 @@ package logic
 import (
 	"fmt"
 	"log"
+	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/tanay13/GlitchMesh/internal/client"
@@ -10,41 +12,47 @@ import (
 	"github.com/tanay13/GlitchMesh/internal/utils"
 )
 
-func Redirect(path string) ([]byte, error) {
-	yaml_file_path := config.Configs.Env.YAML_FILE_PATH
+func ProxyLogic(w http.ResponseWriter, r *http.Request) (int, error) {
 
-	if yaml_file_path == "" {
+	yamlFilePath := config.Configs.Env.YAML_FILE_PATH
+
+	if yamlFilePath == "" {
 		log.Fatalf("Please set up the proxy yaml first!!")
 	}
 
-	proxy_config, err := utils.ParseYaml(yaml_file_path)
+	proxyConfig, err := utils.ParseYaml(yamlFilePath)
+
 	if err != nil {
-		return nil, fmt.Errorf("%v", err)
+		return http.StatusInternalServerError, fmt.Errorf("%v", err)
 	}
+
+	path := strings.TrimPrefix(r.URL.Path, "/redirect/")
+
 	urlParts := strings.SplitN(path, "/", 2)
 
-	service_name := urlParts[0]
+	serviceName := urlParts[0]
+
 	endpoint := urlParts[1]
 
-	service_config := utils.GetServiceConfig(service_name, proxy_config)
+	serviceConfig := utils.GetServiceConfig(serviceName, proxyConfig)
 
-	if service_config == nil {
-		return nil, fmt.Errorf("Service config not found in the proxy list")
+	if serviceConfig == nil {
+		return http.StatusInternalServerError, fmt.Errorf("Service config not found in the proxy list")
 	}
 
-	// fault_name := service_config.Fault
-	service_url := service_config.Url
-	//	fault_value := service_config.Value
-
-	completeUrl := service_url + endpoint
-
-	resp, err := client.MakeGetRedirection(completeUrl)
+	serviceUrl, err := url.Parse(serviceConfig.Url)
 
 	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+	serviceUrl.Path = endpoint
+	serviceUrl.RawQuery = r.URL.RawQuery
 
-		return nil, fmt.Errorf("Error during service call %v", err)
+	statusCode, err := client.ProxyRequest(w, r, serviceUrl.String())
 
+	if err != nil {
+		return http.StatusInternalServerError, err
 	}
 
-	return resp, nil
+	return statusCode, nil
 }

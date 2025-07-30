@@ -1,45 +1,41 @@
 package client
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
 	"io"
+	"log"
 	"net/http"
+
+	"github.com/tanay13/GlitchMesh/internal/utils"
 )
 
-func makePostRedirection(redirectionUrl string, body string) error {
+func ProxyRequest(w http.ResponseWriter, r *http.Request, targetURL string) (int, error) {
 
-	requestBuffer, _ := json.Marshal(body)
-
-	requestBody := bytes.NewBuffer(requestBuffer)
-
-	_, err := http.Post(redirectionUrl, "application/json", requestBody)
+	req, err := http.NewRequestWithContext(r.Context(), r.Method, targetURL, r.Body)
 
 	if err != nil {
-		return fmt.Errorf("Error while making post call %v", err)
+		return http.StatusInternalServerError, err
 	}
 
-	return nil
+	client := &http.Client{}
 
-}
-
-func MakeGetRedirection(redirectionURL string) ([]byte, error) {
-
-	response, err := http.Get(redirectionURL)
+	resp, err := client.Do(req)
 
 	if err != nil {
-		return nil, fmt.Errorf("error making GET call %v", err)
+		return http.StatusBadGateway, err
 	}
 
-	defer response.Body.Close()
+	defer resp.Body.Close()
 
-	responseBody, err := io.ReadAll(response.Body)
+	utils.CopyHeaders(w.Header(), resp.Header)
 
-	if err != nil {
-		return responseBody, fmt.Errorf("error while reading the response body %v", err)
+	w.WriteHeader(resp.StatusCode)
+
+	if _, err := io.Copy(w, resp.Body); err != nil {
+		log.Printf("response body copy failed: %v", err)
 	}
 
-	return responseBody, nil
+	utils.CopyHeaders(req.Header, r.Header)
+
+	return http.StatusOK, nil
 
 }

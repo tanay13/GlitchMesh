@@ -21,3 +21,12 @@ func WriteJSONError(w http.ResponseWriter, statusCode int, message string) {
 	w.WriteHeader(statusCode)
 	fmt.Fprintf(w, `{"error": "%s"}`, message)
 }
+
+func CopyHeaders(dst, src http.Header) {
+    for k, vv := range src {
+        for _, v := range vv {
+            dst.Add(k, v)
+        }
+    }
+}
+
