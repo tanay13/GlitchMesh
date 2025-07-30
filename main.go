@@ -30,9 +30,6 @@ func main() {
 	switch cmd {
 	case constants.CMD_START:
 		commands.HandleStart(args)
-
-	case constants.CMD_APPLY:
-		commands.HandleApply(args)
 	}
 }
 

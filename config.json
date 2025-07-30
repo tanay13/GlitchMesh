@@ -1,0 +1,5 @@
+{
+  "env": {
+    "yaml_file_path": "../test.yaml"
+  }
+}
