@@ -7,6 +7,10 @@ type Proxy struct {
 type ServiceConfig struct {
 	Name  string
 	Url   string
-	Fault string
-	Value string
+	Fault FaultConfig
+}
+
+type FaultConfig struct {
+	Type  string
+	Value int
 }

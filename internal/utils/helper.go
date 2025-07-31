@@ -23,10 +23,13 @@ func WriteJSONError(w http.ResponseWriter, statusCode int, message string) {
 }
 
 func CopyHeaders(dst, src http.Header) {
-    for k, vv := range src {
-        for _, v := range vv {
-            dst.Add(k, v)
-        }
-    }
+	for k, vv := range src {
+		for _, v := range vv {
+			dst.Add(k, v)
+		}
+	}
 }
 
+func ParseURLParts(urlParts []string) (string, string) {
+	return urlParts[0], urlParts[1]
+}
