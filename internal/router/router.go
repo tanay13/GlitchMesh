@@ -20,7 +20,7 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 	targetService := urlParts[0]
 
 	start := time.Now()
-	statusCode, err := logic.ProxyLogic(w, r, urlParts)
+	statusCode, faultType, faultValue, err := logic.ProxyLogic(w, r, urlParts)
 	elapsed := time.Since(start)
 	if err != nil {
 		log.Printf("[Target: %s, Time Taken: %s , error: %v]", targetService, elapsed, err.Error())
@@ -28,5 +28,5 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("[Target: %s, Time Taken: %s]", targetService, elapsed)
+	log.Printf("[Target: %s, Time Taken: %s, Fault: %s, Value: %s]", targetService, elapsed, faultType, faultValue)
 }
