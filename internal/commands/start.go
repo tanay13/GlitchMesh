@@ -8,19 +8,24 @@ import (
 	"github.com/tanay13/GlitchMesh/internal/router"
 )
 
-func HandleStart(args []string) {
+type Start struct{}
+
+func (c *Start) Name() string {
+	return constants.CMD_START
+}
+
+func (c *Start) Execute(args []string) error {
 	switch args[0] {
 	case constants.SERVER:
-		startServer()
+		return c.startServer()
+	default:
+		return fmt.Errorf("unknown start type: %s", args[0])
 	}
 }
 
-func startServer() {
+func (c *Start) startServer() error {
 	fmt.Println("Proxy server running on port 9000")
 	http.HandleFunc("/", router.HomeHandler)
 	http.HandleFunc("/redirect/", router.ProxyHandler)
-	err := http.ListenAndServe(":9000", nil)
-	if err != nil {
-		fmt.Println("Server error:", err)
-	}
+	return http.ListenAndServe(":9000", nil)
 }
