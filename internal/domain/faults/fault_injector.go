@@ -18,7 +18,7 @@ func NewFaultInjector(faultConfig models.FaultConfig) *FaultInjector {
 	}
 
 	if faultConfig.Latency != nil {
-		faultMap[&LatencyFault{Config: &faultConfig}] = faultConfig.Error
+		faultMap[&LatencyFault{Config: &faultConfig}] = faultConfig.Latency
 	}
 
 	return &FaultInjector{
@@ -34,7 +34,9 @@ func (fi *FaultInjector) ProcessFault(faultConfig models.FaultConfig) *FaultResp
 		}
 	}
 
-	for fault := range fi.FaultsEnabled {
+	injector := NewFaultInjector(faultConfig)
+
+	for fault := range injector.FaultsEnabled {
 
 		details := fault.InjectFault()
 

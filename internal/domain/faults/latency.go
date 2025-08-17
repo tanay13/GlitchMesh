@@ -20,6 +20,7 @@ func (f *LatencyFault) InjectFault() FaultResponse {
 
 	return FaultResponse{
 		true,
+		"",
 		false,
 		http.StatusOK,
 		FAULT_INJECTED,

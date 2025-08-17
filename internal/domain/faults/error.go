@@ -13,6 +13,7 @@ const (
 func (f *ErrorFault) InjectFault() FaultResponse {
 	return FaultResponse{
 		true,
+		"",
 		true,
 		f.Config.Error.StatusCode,
 		ERROR_INJECTED_MSG,
