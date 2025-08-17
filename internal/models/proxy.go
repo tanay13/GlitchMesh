@@ -11,6 +11,16 @@ type ServiceConfig struct {
 }
 
 type FaultConfig struct {
-	Type  string
-	Value int
+	Enabled bool
+	Error   *ErrorFaultConfig
+	Latency *LatencyFaultConfig
+}
+
+type ErrorFaultConfig struct {
+	StatusCode int
+	Message    string
+}
+
+type LatencyFaultConfig struct {
+	Delay int
 }
