@@ -1,18 +1,15 @@
 package domain
 
 import (
-	"log"
-
 	"github.com/tanay13/GlitchMesh/internal/models"
 )
 
-type FaultInjectionService struct {
-	Logger         *log.Logger
+type FaultInjector struct {
 	IsFaultEnabled bool
 	FaultsEnabled  map[Fault]any
 }
 
-func NewFaultInjectionService(logger *log.Logger, faultConfig models.FaultConfig) *FaultInjectionService {
+func NewFaultInjector(faultConfig models.FaultConfig) *FaultInjector {
 	isEnabled := faultConfig.Enabled
 	faultMap := map[Fault]any{}
 
@@ -24,25 +21,22 @@ func NewFaultInjectionService(logger *log.Logger, faultConfig models.FaultConfig
 		faultMap[&LatencyFault{Config: &faultConfig}] = faultConfig.Error
 	}
 
-	return &FaultInjectionService{
-		logger,
+	return &FaultInjector{
 		isEnabled,
 		faultMap,
 	}
 }
 
-func (s *FaultInjectionService) ProcessFault(faultConfig models.FaultConfig) *FaultResponse {
-	if !s.shouldApply(faultConfig) {
+func (fi *FaultInjector) ProcessFault(faultConfig models.FaultConfig) *FaultResponse {
+	if !fi.shouldApply(faultConfig) {
 		return &FaultResponse{
 			Applied: false,
 		}
 	}
 
-	for fault := range s.FaultsEnabled {
+	for fault := range fi.FaultsEnabled {
 
 		details := fault.InjectFault()
-
-		s.Logger.Print("Fault Injected ", details.Message, " with status Code ", details.StatusCode)
 
 		if details.ShouldTerminate {
 			return &details
@@ -53,6 +47,6 @@ func (s *FaultInjectionService) ProcessFault(faultConfig models.FaultConfig) *Fa
 	}
 }
 
-func (s *FaultInjectionService) shouldApply(faultConfig models.FaultConfig) bool {
+func (fi *FaultInjector) shouldApply(faultConfig models.FaultConfig) bool {
 	return faultConfig.Enabled
 }
