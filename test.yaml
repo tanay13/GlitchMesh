@@ -3,6 +3,7 @@ service:
    url: "http://localhost:8080/"
    fault:
     enabled: true
+    priority: ["error", "latency"]
     types:
       latency:
        delay: 5000

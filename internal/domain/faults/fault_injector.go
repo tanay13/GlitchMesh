@@ -39,7 +39,7 @@ func (fi *FaultInjector) ProcessFault(faultConfig models.Fault) *FaultResponse {
 		}
 	}
 
-	faults := fi.getFaults(faultConfig.Types)
+	faults := fi.getFaults(faultConfig.Priority)
 
 	for _, fault := range faults {
 
@@ -60,11 +60,11 @@ func (fi *FaultInjector) shouldApply(faultConfig models.Fault) bool {
 	return faultConfig.Enabled
 }
 
-func (fi *FaultInjector) getFaults(faults map[string]models.FaultConfig) []Fault {
+func (fi *FaultInjector) getFaults(faultPriority []string) []Fault {
 
 	faultList := make([]Fault, 0)
 
-	for name, _ := range faults {
+	for _, name := range faultPriority {
 		faultList = append(faultList, fi.Faults[name])
 	}
 
