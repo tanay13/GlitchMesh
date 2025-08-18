@@ -1,9 +1,12 @@
 package domain
 
-import "github.com/tanay13/GlitchMesh/internal/models"
+import (
+	"github.com/tanay13/GlitchMesh/internal/constants"
+	"github.com/tanay13/GlitchMesh/internal/models"
+)
 
 type ErrorFault struct {
-	Config *models.FaultConfig
+	Config *models.Fault
 }
 
 const (
@@ -11,12 +14,19 @@ const (
 )
 
 func (f *ErrorFault) InjectFault() FaultResponse {
+
+	message := ERROR_INJECTED_MSG
+
+	if f.Config.Types[constants.ERROR].Message != "" {
+		message = f.Config.Types[constants.ERROR].Message
+	}
+
 	return FaultResponse{
-		true,
-		"",
-		true,
-		f.Config.Error.StatusCode,
-		ERROR_INJECTED_MSG,
-		nil,
+		Applied:         true,
+		TargetUrl:       "",
+		ShouldTerminate: true,
+		StatusCode:      f.Config.Types[constants.ERROR].StatusCode,
+		Message:         message,
+		Body:            nil,
 	}
 }

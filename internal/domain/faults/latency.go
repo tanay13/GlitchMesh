@@ -4,11 +4,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/tanay13/GlitchMesh/internal/constants"
 	"github.com/tanay13/GlitchMesh/internal/models"
 )
 
 type LatencyFault struct {
-	Config *models.FaultConfig
+	Config *models.Fault
 }
 
 const (
@@ -16,7 +17,7 @@ const (
 )
 
 func (f *LatencyFault) InjectFault() FaultResponse {
-	time.Sleep(time.Duration(f.Config.Latency.Delay) * time.Millisecond)
+	time.Sleep(time.Duration(f.Config.Types[constants.LATENCY].Delay) * time.Millisecond)
 
 	return FaultResponse{
 		true,

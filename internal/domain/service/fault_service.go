@@ -20,13 +20,9 @@ func NewFaultService(faultInjector *domain.FaultInjector, logger *log.Logger) *F
 	}
 }
 
-func (fs *FaultService) ApplyFault(faultConfig models.FaultConfig) *domain.FaultResponse {
+func (fs *FaultService) ApplyFault(faultConfig models.Fault) *domain.FaultResponse {
 
 	response := fs.faultInjector.ProcessFault(faultConfig)
-
-	if response.Applied {
-		fs.logger.Printf("Fault applied: %s (Status: %d)", response.Message, response.StatusCode)
-	}
 
 	return response
 }

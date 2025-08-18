@@ -1,25 +1,24 @@
 package domain
 
 import (
+	"log"
+
+	"github.com/tanay13/GlitchMesh/internal/constants"
 	"github.com/tanay13/GlitchMesh/internal/models"
 )
 
 type FaultInjector struct {
 	IsFaultEnabled bool
-	FaultsEnabled  map[Fault]any
+	Faults         map[string]Fault
 }
 
-func NewFaultInjector(faultConfig models.FaultConfig) *FaultInjector {
+func NewFaultInjector(faultConfig models.Fault) *FaultInjector {
 	isEnabled := faultConfig.Enabled
-	faultMap := map[Fault]any{}
+	faultMap := make(map[string]Fault)
 
-	if faultConfig.Error != nil {
-		faultMap[&ErrorFault{Config: &faultConfig}] = faultConfig.Error
-	}
+	faultMap[constants.ERROR] = &ErrorFault{Config: &faultConfig}
 
-	if faultConfig.Latency != nil {
-		faultMap[&LatencyFault{Config: &faultConfig}] = faultConfig.Latency
-	}
+	faultMap[constants.LATENCY] = &LatencyFault{Config: &faultConfig}
 
 	return &FaultInjector{
 		isEnabled,
@@ -27,18 +26,26 @@ func NewFaultInjector(faultConfig models.FaultConfig) *FaultInjector {
 	}
 }
 
-func (fi *FaultInjector) ProcessFault(faultConfig models.FaultConfig) *FaultResponse {
+func (fi *FaultInjector) ProcessFault(faultConfig models.Fault) *FaultResponse {
+
+	injector := NewFaultInjector(faultConfig)
+
+	fi.IsFaultEnabled = injector.IsFaultEnabled
+	fi.Faults = injector.Faults
+
 	if !fi.shouldApply(faultConfig) {
 		return &FaultResponse{
 			Applied: false,
 		}
 	}
 
-	injector := NewFaultInjector(faultConfig)
+	faults := fi.getFaults(faultConfig.Types)
 
-	for fault := range injector.FaultsEnabled {
+	for _, fault := range faults {
 
 		details := fault.InjectFault()
+
+		log.Printf("Fault applied: %s (Status: %d)", details.Message, details.StatusCode)
 
 		if details.ShouldTerminate {
 			return &details
@@ -49,6 +56,18 @@ func (fi *FaultInjector) ProcessFault(faultConfig models.FaultConfig) *FaultResp
 	}
 }
 
-func (fi *FaultInjector) shouldApply(faultConfig models.FaultConfig) bool {
+func (fi *FaultInjector) shouldApply(faultConfig models.Fault) bool {
 	return faultConfig.Enabled
+}
+
+func (fi *FaultInjector) getFaults(faults map[string]models.FaultConfig) []Fault {
+
+	faultList := make([]Fault, 0)
+
+	for name, _ := range faults {
+		faultList = append(faultList, fi.Faults[name])
+	}
+
+	return faultList
+
 }

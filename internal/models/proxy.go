@@ -7,20 +7,16 @@ type Proxy struct {
 type ServiceConfig struct {
 	Name  string
 	Url   string
-	Fault FaultConfig
+	Fault Fault
+}
+
+type Fault struct {
+	Enabled bool
+	Types   map[string]FaultConfig
 }
 
 type FaultConfig struct {
-	Enabled bool
-	Error   *ErrorFaultConfig
-	Latency *LatencyFaultConfig
-}
-
-type ErrorFaultConfig struct {
 	StatusCode int
 	Message    string
-}
-
-type LatencyFaultConfig struct {
-	Delay int
+	Delay      int
 }

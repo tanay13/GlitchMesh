@@ -35,6 +35,13 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if response.ShouldTerminate {
+		utils.WriteJSONError(w, response.StatusCode, response.Message)
+
+log.Printf("[Target: %s, Time Taken: %s, Fault: %s]", targetService, elapsed, response.Message)
+		return
+	}
+
 	targetUrl := response.TargetUrl
 
 	if r.URL.RawQuery != "" {
@@ -43,5 +50,5 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 
 	client.ProxyRequest(w, r, targetUrl)
 
-	log.Printf("[Target: %s, Time Taken: %s, Fault: %s]", targetService, elapsed, response.Message)
+	log.Printf("[Target: %s, Time Taken: %s]", targetService, elapsed)
 }

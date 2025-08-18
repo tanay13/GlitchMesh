@@ -20,7 +20,7 @@ func NewApp() *App {
 
 	faultInjector := &domain.FaultInjector{
 		IsFaultEnabled: false,
-		FaultsEnabled:  make(map[domain.Fault]any),
+		Faults:         make(map[string]domain.Fault),
 	}
 
 	faultService := service.NewFaultService(faultInjector, logger)
