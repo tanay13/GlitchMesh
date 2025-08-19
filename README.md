@@ -14,3 +14,6 @@
 - ⚙️ **Config-driven** – Define fault behavior in a simple YAML file
 - 📜 **Easy logging** – Transparent logging of all injected faults and proxy activity
 
+## Upcoming Features
+
+- [ ] Sidecar Mode for transparent proxy (mainly for K8s)
