@@ -6,13 +6,59 @@
 > ⚠️ **Note:** This project is **under active development**. Many features are still being implemented, and things may change frequently. Feedback and contributions are highly appreciated!
 ---
 
-## 🚀 Features
 
-- 🧩 **Single-port intelligent proxy** – Routes requests to appropriate services based on rules
-- 🐢 **Latency injection** – Add artificial delay to simulate slow downstream services
-- 🔥 **Fault simulation** – Simulate service crashes, errors, and timeouts
-- ⚙️ **Config-driven** – Define fault behavior in a simple YAML file
-- 📜 **Easy logging** – Transparent logging of all injected faults and proxy activity
+## 🚀 Current Features
+
+### Core Proxy Functionality
+- **Intelligent Request Routing** - Single-port proxy that routes requests to appropriate backend services based on URL patterns (`/redirect/{service-name}/{endpoint}`)
+- **YAML Configuration** - Simple, declarative configuration using YAML files for service definitions and fault rules
+- **HTTP Proxy** - Full HTTP request/response proxying with header preservation and query parameter support
+
+### Fault Injection Capabilities
+ **Latency Injection** - Add configurable artificial delays to simulate slow downstream services
+  - Configurable delay in milliseconds
+  - Per-service latency configuration
+  
+ **Error Simulation** - Simulate service failures and HTTP errors
+  - Configurable HTTP status codes (500, 503, etc.)
+  - Custom error messages
+  - Request termination on error injection
+
+### Configuration & Control
+- **Priority-Based Fault Application** - Define fault execution order with priority arrays (`priority: ["error", "latency"]`)
+- **Service-Specific Configuration** - Apply different fault profiles to different services
+- **Enable/Disable Faults** - Toggle fault injection on/off per service configuration
+
+### Observability
+- **Request Logging** - Comprehensive logging of all proxied requests with timing information
+- **Fault Logging** - Transparent logging of all injected faults for debugging and monitoring
+
+### Current Configuration Format
+
+```yaml
+service:
+  - name: "service-one"
+    url: "http://localhost:8080/"
+    fault:
+      enabled: true
+      priority: ["error", "latency"]
+      types:
+        latency:
+          delay: 5000  # 5 second delay
+        error:
+          statuscode: 500
+          message: "something went really wrong!!"
+```
+
+### Usage
+
+```bash
+# Start the proxy server on port 9000
+./glitchmesh start server
+
+# Make requests through the proxy
+curl http://localhost:9000/redirect/service-one/api/users
+```
 
 ## Upcoming Features
 
