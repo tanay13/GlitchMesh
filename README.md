@@ -63,7 +63,7 @@ curl http://localhost:9000/redirect/service-one/api/users
 ## Upcoming Features
 
 **Network Faults**
-  - [ ] Connection Timeouts - Simulate services that accept connections but never respond
+  - [x] Connection Timeouts - Simulate services that accept connections but never respond
   - [ ] Connection Drop - Randomly Dropping connections mid request
   - [ ] Bandwidth Throttling - Limiting throughput to simulate network congestion
 

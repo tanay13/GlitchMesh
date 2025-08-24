@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"log"
 
 	domain "github.com/tanay13/GlitchMesh/internal/domain/faults"
@@ -20,9 +21,9 @@ func NewFaultService(faultInjector *domain.FaultInjector, logger *log.Logger) *F
 	}
 }
 
-func (fs *FaultService) ApplyFault(faultConfig models.Fault) *domain.FaultResponse {
+func (fs *FaultService) ApplyFault(ctx context.Context, faultConfig models.Fault) *domain.FaultResponse {
 
-	response := fs.faultInjector.ProcessFault(faultConfig)
+	response := fs.faultInjector.ProcessFault(ctx, faultConfig)
 
 	return response
 }

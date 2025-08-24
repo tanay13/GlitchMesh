@@ -17,7 +17,8 @@ type Fault struct {
 }
 
 type FaultConfig struct {
-	StatusCode int
-	Message    string
-	Delay      int
+	StatusCode      int
+	Message         string
+	Delay           int
+	TimeoutDuration int
 }

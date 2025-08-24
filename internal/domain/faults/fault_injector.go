@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"context"
 	"log"
 
 	"github.com/tanay13/GlitchMesh/internal/constants"
@@ -20,13 +21,15 @@ func NewFaultInjector(faultConfig models.Fault) *FaultInjector {
 
 	faultMap[constants.LATENCY] = &LatencyFault{Config: &faultConfig}
 
+	faultMap[constants.TIMEOUT] = &TimeoutFault{Config: &faultConfig}
+
 	return &FaultInjector{
 		isEnabled,
 		faultMap,
 	}
 }
 
-func (fi *FaultInjector) ProcessFault(faultConfig models.Fault) *FaultResponse {
+func (fi *FaultInjector) ProcessFault(ctx context.Context, faultConfig models.Fault) *FaultResponse {
 
 	injector := NewFaultInjector(faultConfig)
 
@@ -43,7 +46,7 @@ func (fi *FaultInjector) ProcessFault(faultConfig models.Fault) *FaultResponse {
 
 	for _, fault := range faults {
 
-		details := fault.InjectFault()
+		details := fault.InjectFault(ctx)
 
 		log.Printf("Fault applied: %s (Status: %d)", details.Message, details.StatusCode)
 

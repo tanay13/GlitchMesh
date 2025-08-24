@@ -1,6 +1,8 @@
 package router
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -27,7 +29,7 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 	targetService := urlParts[0]
 
 	start := time.Now()
-	response, err := appInstance.ProxyService.HandleRequest(urlParts)
+	response, err := appInstance.ProxyService.HandleRequest(context.Background(), urlParts)
 	elapsed := time.Since(start)
 	if err != nil {
 		log.Printf("[Target: %s, Time Taken: %s , error: %v]", targetService, elapsed, err.Error())
@@ -36,9 +38,15 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if response.ShouldTerminate {
-		utils.WriteJSONError(w, response.StatusCode, response.Message)
 
-log.Printf("[Target: %s, Time Taken: %s, Fault: %s]", targetService, elapsed, response.Message)
+		errorMsg := response.Message
+		if response.ContextErr != nil {
+			errorMsg = fmt.Sprintf("%s (Context: %v)", response.Message, response.ContextErr)
+		}
+
+		utils.WriteJSONError(w, response.StatusCode, errorMsg)
+
+		log.Printf("[Target: %s, Time Taken: %s, Fault: %s]", targetService, elapsed, response.Message)
 		return
 	}
 

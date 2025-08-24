@@ -3,11 +3,12 @@ service:
    url: "http://localhost:8080/"
    fault:
     enabled: true
-    priority: ["error", "latency"]
+    priority: ["latency", "timeout"]
     types:
       latency:
        delay: 5000
       error:
        statuscode: 500
        message: "something went really wrong!!"
-
+      timeout:
+        timeoutduration: 5000

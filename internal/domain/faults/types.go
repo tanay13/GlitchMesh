@@ -1,5 +1,7 @@
 package domain
 
+import "context"
+
 type FaultResponse struct {
 	Applied         bool
 	TargetUrl       string
@@ -7,8 +9,9 @@ type FaultResponse struct {
 	StatusCode      int
 	Message         string
 	Body            any
+	ContextErr      error
 }
 
 type Fault interface {
-	InjectFault() FaultResponse
+	InjectFault(context.Context) FaultResponse
 }

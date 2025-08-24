@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -20,7 +21,7 @@ func NewProxyService(faultService *FaultService, logger *log.Logger) *ProxyServi
 	}
 }
 
-func (s *ProxyService) HandleRequest(urlParts []string) (*domain.FaultResponse, error) {
+func (s *ProxyService) HandleRequest(ctx context.Context, urlParts []string) (*domain.FaultResponse, error) {
 
 	/* remove parsing everytime there is a request, better way is to store it and use it again and again or hot-reloading */
 	proxyConfig, err := utils.ParseConfigYaml()
@@ -39,7 +40,7 @@ func (s *ProxyService) HandleRequest(urlParts []string) (*domain.FaultResponse, 
 		return nil, fmt.Errorf("service config not found in the proxy list")
 	}
 
-	faultResponse := s.faultService.ApplyFault(serviceConfig.Fault)
+	faultResponse := s.faultService.ApplyFault(ctx, serviceConfig.Fault)
 
 	faultResponse.TargetUrl = targetUrl
 
