@@ -16,4 +16,19 @@
 
 ## Upcoming Features
 
-- [ ] Sidecar Mode for transparent proxy (mainly for K8s)
+**Network Faults**
+  - [ ] Connection Timeouts - Simulate services that accept connections but never respond
+  - [ ] Connection Drop - Randomly Dropping connections mid request
+  - [ ] Bandwidth Throttling - Limiting throughput to simulate network congestion
+
+**Response Manupulation**
+  - [ ] Partial response corruption - Corrupt random bytes in response bodies
+
+**Advanced Simulations**
+  - [ ] Circuit breaker simulation - Fail fast after consecutive failures
+
+**Other Features**
+  - [ ] Hot reloading of configs - reloading configs without restarts
+  - [ ] Sidecar Mode for transparent proxy (mainly for K8s)
+  - [ ] API Based control - to enable/disable faults using API endpoints
+  - [ ] Percentage Based Faults - Apply faults to only X% of the requests
