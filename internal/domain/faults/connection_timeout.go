@@ -32,13 +32,22 @@ func (f *TimeoutFault) InjectFault(ctx context.Context) FaultResponse {
 		message = f.Config.Types[constants.TIMEOUT].Message
 	}
 
-	return FaultResponse{
-		Applied:         true,
-		TargetUrl:       "",
-		ShouldTerminate: true,
-		StatusCode:      f.Config.Types[constants.TIMEOUT].StatusCode,
-		Message:         message,
-		Body:            nil,
-		ContextErr:      ctx.Err(),
+	/*Check WHY the context was done*/
+	if ctx.Err() == context.DeadlineExceeded {
+		return FaultResponse{
+			Applied:         true,
+			ShouldTerminate: true,
+			StatusCode:      f.Config.Types[constants.TIMEOUT].StatusCode,
+			Message:         message,
+			ContextErr:      ctx.Err(),
+		}
+	} else {
+		return FaultResponse{
+			Applied:         true,
+			ShouldTerminate: true,
+			StatusCode:      499,
+			Message:         "Client disconnected during timeout simulation",
+			ContextErr:      ctx.Err(),
+		}
 	}
 }

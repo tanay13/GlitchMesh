@@ -1,7 +1,6 @@
 package router
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -29,7 +28,7 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 	targetService := urlParts[0]
 
 	start := time.Now()
-	response, err := appInstance.ProxyService.HandleRequest(context.Background(), urlParts)
+	response, err := appInstance.ProxyService.HandleRequest(r.Context(), urlParts)
 	elapsed := time.Since(start)
 	if err != nil {
 		log.Printf("[Target: %s, Time Taken: %s , error: %v]", targetService, elapsed, err.Error())
