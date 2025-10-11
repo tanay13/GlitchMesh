@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/tanay13/GlitchMesh/internal/config"
 	domain "github.com/tanay13/GlitchMesh/internal/domain/faults"
 	"github.com/tanay13/GlitchMesh/internal/utils"
 )
@@ -24,11 +25,7 @@ func NewProxyService(faultService *FaultService, logger *log.Logger) *ProxyServi
 func (s *ProxyService) HandleRequest(ctx context.Context, urlParts []string) (*domain.FaultResponse, error) {
 
 	/* remove parsing everytime there is a request, better way is to store it and use it again and again or hot-reloading */
-	proxyConfig, err := utils.ParseConfigYaml()
-
-	if err != nil {
-		return nil, err
-	}
+	proxyConfig := config.ProxyConfig
 
 	serviceName, endpoint := utils.ParseURLParts(urlParts)
 

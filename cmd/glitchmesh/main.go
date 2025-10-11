@@ -15,6 +15,8 @@ func main() {
 		log.Fatalf("Error loading config %v", err)
 	}
 
+	config.ProxyLoad()
+
 	cliArguments := os.Args[1:]
 
 	if len(cliArguments) < 2 {

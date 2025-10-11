@@ -6,9 +6,12 @@ import (
 	"os"
 
 	"github.com/tanay13/GlitchMesh/internal/models"
+	"github.com/tanay13/GlitchMesh/internal/utils"
 )
 
 var Configs *models.Config
+
+var ProxyConfig *models.Proxy
 
 func Load(path string) (*models.Config, error) {
 	file, err := os.Open(path)
@@ -26,4 +29,8 @@ func Load(path string) (*models.Config, error) {
 	Configs = &cfg
 
 	return &cfg, nil
+}
+
+func ProxyLoad() {
+	ProxyConfig, _ = utils.ParseConfigYaml(Configs.Env.YAML_FILE_PATH)
 }
