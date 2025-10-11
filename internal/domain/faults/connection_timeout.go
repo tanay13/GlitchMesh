@@ -2,7 +2,6 @@ package domain
 
 import (
 	"context"
-	"net/http"
 	"time"
 
 	"github.com/tanay13/GlitchMesh/internal/constants"
@@ -24,6 +23,7 @@ func (f *TimeoutFault) InjectFault(ctx context.Context) FaultResponse {
 
 	defer cancel()
 
+	/*to block the go routine until timeoutDuration*/
 	_ = <-ctx.Done()
 
 	message := TIMEOUT_FAULT_INJECTED
@@ -36,7 +36,7 @@ func (f *TimeoutFault) InjectFault(ctx context.Context) FaultResponse {
 		Applied:         true,
 		TargetUrl:       "",
 		ShouldTerminate: true,
-		StatusCode:      http.StatusOK,
+		StatusCode:      f.Config.Types[constants.TIMEOUT].StatusCode,
 		Message:         message,
 		Body:            nil,
 		ContextErr:      ctx.Err(),

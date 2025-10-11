@@ -54,7 +54,7 @@ service:
 
 ```bash
 # Start the proxy server on port 9000
-./glitchmesh start server
+go run ./cmd/glitchmesh/main.go start server
 
 # Make requests through the proxy
 curl http://localhost:9000/redirect/service-one/api/users
