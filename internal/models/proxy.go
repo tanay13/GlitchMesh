@@ -11,9 +11,10 @@ type ServiceConfig struct {
 }
 
 type Fault struct {
-	Enabled  bool
-	Priority []string
-	Types    map[string]FaultConfig
+	Enabled     bool
+	Priority    []string
+	Probability float64
+	Types       map[string]FaultConfig
 }
 
 type FaultConfig struct {

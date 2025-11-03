@@ -77,4 +77,4 @@ curl http://localhost:9000/redirect/service-one/api/users
   - [ ] Hot reloading of configs - reloading configs without restarts
   - [ ] Sidecar Mode for transparent proxy (mainly for K8s)
   - [ ] API Based control - to enable/disable faults using API endpoints
-  - [ ] Percentage Based Faults - Apply faults to only X% of the requests
+  - [x] Percentage Based Faults - Apply faults to only X% of the requests

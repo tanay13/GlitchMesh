@@ -3,6 +3,7 @@ package domain
 import (
 	"context"
 	"log"
+	"math/rand"
 
 	"github.com/tanay13/GlitchMesh/internal/constants"
 	"github.com/tanay13/GlitchMesh/internal/models"
@@ -60,7 +61,16 @@ func (fi *FaultInjector) ProcessFault(ctx context.Context, faultConfig models.Fa
 }
 
 func (fi *FaultInjector) shouldApply(faultConfig models.Fault) bool {
-	return faultConfig.Enabled
+
+	if !faultConfig.Enabled {
+		return false
+	}
+
+	if faultConfig.Probability == 0 {
+		return true
+	}
+	randomFloat := rand.Float64()
+	return randomFloat < faultConfig.Probability
 }
 
 func (fi *FaultInjector) getFaults(faultPriority []string) []Fault {
