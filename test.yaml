@@ -12,5 +12,5 @@ service:
        statuscode: 500
        message: "something went really wrong!!"
       timeout:
-        timeoutduration: 5000
+        timeoutduration: 2000
         statuscode: 500

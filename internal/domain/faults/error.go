@@ -23,6 +23,7 @@ func (f *ErrorFault) InjectFault(ctx context.Context) FaultResponse {
 	}
 
 	return FaultResponse{
+		Fault:           constants.ERROR,
 		Applied:         true,
 		TargetUrl:       "",
 		ShouldTerminate: true,

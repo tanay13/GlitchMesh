@@ -27,6 +27,7 @@ func (c *Start) startServer() error {
 	router.InitRouter()
 	fmt.Println("Proxy server running on port 9000")
 	http.HandleFunc("/", router.HomeHandler)
+	http.HandleFunc("/metrics", router.MetricsHandler)
 	http.HandleFunc("/redirect/", router.ProxyHandler)
 	return http.ListenAndServe(":9000", nil)
 }

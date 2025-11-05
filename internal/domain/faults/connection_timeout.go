@@ -35,6 +35,7 @@ func (f *TimeoutFault) InjectFault(ctx context.Context) FaultResponse {
 	/*Check WHY the context was done*/
 	if ctx.Err() == context.DeadlineExceeded {
 		return FaultResponse{
+			Fault:           constants.TIMEOUT,
 			Applied:         true,
 			ShouldTerminate: true,
 			StatusCode:      f.Config.Types[constants.TIMEOUT].StatusCode,
@@ -43,6 +44,7 @@ func (f *TimeoutFault) InjectFault(ctx context.Context) FaultResponse {
 		}
 	} else {
 		return FaultResponse{
+			Fault:           constants.TIMEOUT,
 			Applied:         true,
 			ShouldTerminate: true,
 			StatusCode:      499,

@@ -26,6 +26,7 @@ func (f *LatencyFault) InjectFault(ctx context.Context) FaultResponse {
 	select {
 	case <-timer.C:
 		return FaultResponse{
+			Fault:           constants.LATENCY,
 			Applied:         true,
 			ShouldTerminate: false,
 			StatusCode:      http.StatusOK,
@@ -36,6 +37,7 @@ func (f *LatencyFault) InjectFault(ctx context.Context) FaultResponse {
 
 	case <-ctx.Done():
 		return FaultResponse{
+			Fault:           constants.LATENCY,
 			Applied:         true,
 			ShouldTerminate: true,
 			StatusCode:      499,

@@ -6,6 +6,7 @@ import (
 	"math/rand"
 
 	"github.com/tanay13/GlitchMesh/internal/constants"
+	"github.com/tanay13/GlitchMesh/internal/metrics"
 	"github.com/tanay13/GlitchMesh/internal/models"
 )
 
@@ -31,7 +32,7 @@ func NewFaultInjector(faultConfig models.Fault) *FaultInjector {
 }
 
 func (fi *FaultInjector) ProcessFault(ctx context.Context, faultConfig models.Fault) *FaultResponse {
-
+	/*TODO: revisit this pattern*/
 	injector := NewFaultInjector(faultConfig)
 
 	fi.IsFaultEnabled = injector.IsFaultEnabled
@@ -49,6 +50,9 @@ func (fi *FaultInjector) ProcessFault(ctx context.Context, faultConfig models.Fa
 
 		details := fault.InjectFault(ctx)
 
+		metrics.RegisteredMetrics[constants.FAULT_METRICS].Increment(constants.TOTAL_FAULTS_INJECTED, 1)
+		metrics.RegisteredMetrics[constants.FAULT_METRICS].Increment(details.Fault, 1)
+
 		log.Printf("Fault applied: %s (Status: %d)", details.Message, details.StatusCode)
 
 		if details.ShouldTerminate {
@@ -61,7 +65,6 @@ func (fi *FaultInjector) ProcessFault(ctx context.Context, faultConfig models.Fa
 }
 
 func (fi *FaultInjector) shouldApply(faultConfig models.Fault) bool {
-
 	if !faultConfig.Enabled {
 		return false
 	}
@@ -74,7 +77,6 @@ func (fi *FaultInjector) shouldApply(faultConfig models.Fault) bool {
 }
 
 func (fi *FaultInjector) getFaults(faultPriority []string) []Fault {
-
 	faultList := make([]Fault, 0)
 
 	for _, name := range faultPriority {
@@ -82,5 +84,4 @@ func (fi *FaultInjector) getFaults(faultPriority []string) []Fault {
 	}
 
 	return faultList
-
 }

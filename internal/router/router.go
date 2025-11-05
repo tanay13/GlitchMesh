@@ -1,6 +1,7 @@
 package router
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,6 +10,9 @@ import (
 
 	"github.com/tanay13/GlitchMesh/internal/app"
 	"github.com/tanay13/GlitchMesh/internal/client"
+	"github.com/tanay13/GlitchMesh/internal/constants"
+	"github.com/tanay13/GlitchMesh/internal/metrics"
+	"github.com/tanay13/GlitchMesh/internal/models"
 	"github.com/tanay13/GlitchMesh/internal/utils"
 )
 
@@ -20,6 +24,18 @@ func InitRouter() {
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hi from GlitchMesh!"))
+}
+
+func MetricsHandler(w http.ResponseWriter, r *http.Request) {
+
+	fm := metrics.RegisteredMetrics[constants.FAULT_METRICS].(*metrics.FaultMetrics)
+
+	response := models.Metrics{
+		FaultMetrics: fm.Snapshot(),
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
 
 func ProxyHandler(w http.ResponseWriter, r *http.Request) {

@@ -3,6 +3,7 @@ package domain
 import "context"
 
 type FaultResponse struct {
+	Fault           string
 	Applied         bool
 	TargetUrl       string
 	ShouldTerminate bool
