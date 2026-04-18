@@ -58,3 +58,11 @@ func GetProxyConfig() *models.Proxy {
 	defer mu.RUnlock()
 	return proxyConfig
 }
+
+// SetProxyConfigForTesting allows test code to inject a proxy config
+// without loading from a file. Only use in tests.
+func SetProxyConfigForTesting(proxy *models.Proxy) {
+	mu.Lock()
+	defer mu.Unlock()
+	proxyConfig = proxy
+}

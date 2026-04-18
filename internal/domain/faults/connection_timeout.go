@@ -18,31 +18,25 @@ const (
 
 func (f *TimeoutFault) InjectFault(ctx context.Context) FaultResponse {
 	timeoutDuration := time.Duration(f.Config.Types[constants.TIMEOUT].TimeoutDuration) * time.Millisecond
+	timer := time.NewTimer(timeoutDuration)
+	defer timer.Stop()
 
-	ctx, cancel := context.WithTimeout(ctx, timeoutDuration)
+	select {
+	case <-timer.C:
+		message := TIMEOUT_FAULT_INJECTED
+		if f.Config.Types[constants.TIMEOUT].Message != "" {
+			message = f.Config.Types[constants.TIMEOUT].Message
+		}
 
-	defer cancel()
-
-	/*to block the go routine until timeoutDuration*/
-	_ = <-ctx.Done()
-
-	message := TIMEOUT_FAULT_INJECTED
-
-	if f.Config.Types[constants.TIMEOUT].Message != "" {
-		message = f.Config.Types[constants.TIMEOUT].Message
-	}
-
-	/*Check WHY the context was done*/
-	if ctx.Err() == context.DeadlineExceeded {
 		return FaultResponse{
 			Fault:           constants.TIMEOUT,
 			Applied:         true,
 			ShouldTerminate: true,
 			StatusCode:      f.Config.Types[constants.TIMEOUT].StatusCode,
 			Message:         message,
-			ContextErr:      ctx.Err(),
 		}
-	} else {
+
+	case <-ctx.Done():
 		return FaultResponse{
 			Fault:           constants.TIMEOUT,
 			Applied:         true,
