@@ -30,6 +30,12 @@ func CopyHeaders(dst, src http.Header) {
 	}
 }
 
-func ParseURLParts(urlParts []string) (string, string) {
-	return urlParts[0], urlParts[1]
+func ParseURLParts(urlParts []string) (string, string, error) {
+	if len(urlParts) < 2 {
+		return "", "", fmt.Errorf("invalid URL format: expected at least 2 parts, got %d", len(urlParts))
+	}
+	if urlParts[0] == "" {
+		return "", "", fmt.Errorf("service name cannot be empty")
+	}
+	return urlParts[0], urlParts[1], nil
 }

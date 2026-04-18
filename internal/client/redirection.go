@@ -34,8 +34,6 @@ func ProxyRequest(w http.ResponseWriter, r *http.Request, targetURL string) (int
 		log.Printf("response body copy failed: %v", err)
 	}
 
-	utils.CopyHeaders(req.Header, r.Header)
-
 	return http.StatusOK, nil
 
 }

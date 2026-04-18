@@ -18,10 +18,7 @@ func NewApp() *App {
 
 	logger := log.New(os.Stdout, "[GlitchMesh] ", log.LstdFlags)
 
-	faultInjector := &domain.FaultInjector{
-		IsFaultEnabled: false,
-		Faults:         make(map[string]domain.Fault),
-	}
+	faultInjector := &domain.FaultInjector{}
 
 	faultService := service.NewFaultService(faultInjector, logger)
 	proxyService := service.NewProxyService(faultService, logger)

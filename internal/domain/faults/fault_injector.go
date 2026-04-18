@@ -10,44 +10,20 @@ import (
 	"github.com/tanay13/GlitchMesh/internal/models"
 )
 
-type FaultInjector struct {
-	IsFaultEnabled bool
-	Faults         map[string]Fault
-}
-
-func NewFaultInjector(faultConfig models.Fault) *FaultInjector {
-	isEnabled := faultConfig.Enabled
-	faultMap := make(map[string]Fault)
-
-	faultMap[constants.ERROR] = &ErrorFault{Config: &faultConfig}
-
-	faultMap[constants.LATENCY] = &LatencyFault{Config: &faultConfig}
-
-	faultMap[constants.TIMEOUT] = &TimeoutFault{Config: &faultConfig}
-
-	return &FaultInjector{
-		isEnabled,
-		faultMap,
-	}
-}
+// FaultInjector is a stateless service that processes fault configurations
+// and applies faults based on priority and probability rules.
+type FaultInjector struct{}
 
 func (fi *FaultInjector) ProcessFault(ctx context.Context, faultConfig models.Fault) *FaultResponse {
-	/*TODO: revisit this pattern*/
-	injector := NewFaultInjector(faultConfig)
-
-	fi.IsFaultEnabled = injector.IsFaultEnabled
-	fi.Faults = injector.Faults
-
-	if !fi.shouldApply(faultConfig) {
+	if !shouldApply(faultConfig) {
 		return &FaultResponse{
 			Applied: false,
 		}
 	}
 
-	faults := fi.getFaults(faultConfig.Priority)
+	faults := buildFaultList(faultConfig)
 
 	for _, fault := range faults {
-
 		details := fault.InjectFault(ctx)
 
 		metrics.RegisteredMetrics[constants.FAULT_METRICS].Increment(constants.TOTAL_FAULTS_INJECTED, 1)
@@ -59,12 +35,13 @@ func (fi *FaultInjector) ProcessFault(ctx context.Context, faultConfig models.Fa
 			return &details
 		}
 	}
+
 	return &FaultResponse{
 		Applied: true,
 	}
 }
 
-func (fi *FaultInjector) shouldApply(faultConfig models.Fault) bool {
+func shouldApply(faultConfig models.Fault) bool {
 	if !faultConfig.Enabled {
 		return false
 	}
@@ -72,15 +49,24 @@ func (fi *FaultInjector) shouldApply(faultConfig models.Fault) bool {
 	if faultConfig.Probability == 0 {
 		return true
 	}
-	randomFloat := rand.Float64()
-	return randomFloat < faultConfig.Probability
+
+	return rand.Float64() < faultConfig.Probability
 }
 
-func (fi *FaultInjector) getFaults(faultPriority []string) []Fault {
-	faultList := make([]Fault, 0)
+// buildFaultList creates the fault implementations for the given config
+// and returns them ordered by the configured priority.
+func buildFaultList(faultConfig models.Fault) []Fault {
+	faultMap := map[string]Fault{
+		constants.ERROR:   &ErrorFault{Config: &faultConfig},
+		constants.LATENCY: &LatencyFault{Config: &faultConfig},
+		constants.TIMEOUT: &TimeoutFault{Config: &faultConfig},
+	}
 
-	for _, name := range faultPriority {
-		faultList = append(faultList, fi.Faults[name])
+	faultList := make([]Fault, 0, len(faultConfig.Priority))
+	for _, name := range faultConfig.Priority {
+		if f, ok := faultMap[name]; ok {
+			faultList = append(faultList, f)
+		}
 	}
 
 	return faultList

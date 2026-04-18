@@ -24,18 +24,20 @@ func NewProxyService(faultService *FaultService, logger *log.Logger) *ProxyServi
 
 func (s *ProxyService) HandleRequest(ctx context.Context, urlParts []string) (*domain.FaultResponse, error) {
 
-	/* remove parsing everytime there is a request, better way is to store it and use it again and again or hot-reloading */
-	proxyConfig := config.ProxyConfig
+	proxyConfig := config.GetProxyConfig()
 
-	serviceName, endpoint := utils.ParseURLParts(urlParts)
+	serviceName, endpoint, err := utils.ParseURLParts(urlParts)
+	if err != nil {
+		return nil, fmt.Errorf("invalid request URL: %w", err)
+	}
 
 	serviceConfig := utils.GetServiceConfig(serviceName, proxyConfig)
 
-	targetUrl := serviceConfig.Url + endpoint
-
 	if serviceConfig == nil {
-		return nil, fmt.Errorf("service config not found in the proxy list")
+		return nil, fmt.Errorf("service '%s' not found in the proxy configuration", serviceName)
 	}
+
+	targetUrl := serviceConfig.Url + endpoint
 
 	faultResponse := s.faultService.ApplyFault(ctx, serviceConfig.Fault)
 

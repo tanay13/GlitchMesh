@@ -40,7 +40,17 @@ func MetricsHandler(w http.ResponseWriter, r *http.Request) {
 
 func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/redirect/")
+	if path == "" || path == r.URL.Path {
+		utils.WriteJSONError(w, http.StatusBadRequest, "Invalid path: expected /redirect/{service}/{endpoint}")
+		return
+	}
+
 	urlParts := strings.SplitN(path, "/", 2)
+	if len(urlParts) < 2 || urlParts[0] == "" || urlParts[1] == "" {
+		utils.WriteJSONError(w, http.StatusBadRequest, "Invalid path: expected /redirect/{service}/{endpoint}")
+		return
+	}
+
 	targetService := urlParts[0]
 
 	start := time.Now()
