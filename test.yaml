@@ -1,16 +1,61 @@
 service:
- - name: "service-one"
-   url: "http://localhost:8080/"
-   fault:
-    enabled: true
-    probability: 0.6
-    priority: ["latency", "timeout"]
-    types:
-      latency:
-       delay: 5000
-      error:
-       statuscode: 500
-       message: "something went really wrong!!"
-      timeout:
-        timeoutduration: 2000
-        statuscode: 500
+  - name: "Social Media Platform"
+    url: "http://localhost:8080/"
+    fault:
+      enabled: true
+      probability: 0.5
+      priority:
+        - latency
+        - timeout
+      types:
+        latency:
+          delay: 5000
+        error:
+          statuscode: 500
+        timeout:
+          timeoutduration: 3000
+  - name: "Backend Services"
+    url: "http://localhost:8080/"
+    fault:
+      enabled: true
+      probability: 0.5
+      priority:
+        - latency
+        - timeout
+      types:
+        latency:
+          delay: 5000
+        error:
+          statuscode: 500
+        timeout:
+          timeoutduration: 3000
+  - name: "User Authentication"
+    url: "http://localhost:8080/"
+    fault:
+      enabled: true
+      probability: 0.5
+      priority:
+        - latency
+        - timeout
+      types:
+        latency:
+          delay: 5000
+        error:
+          statuscode: 500
+        timeout:
+          timeoutduration: 3000
+  - name: "Data Storage"
+    url: "http://localhost:8080/"
+    fault:
+      enabled: true
+      probability: 0.5
+      priority:
+        - latency
+        - timeout
+      types:
+        latency:
+          delay: 5000
+        error:
+          statuscode: 500
+        timeout:
+          timeoutduration: 3000
