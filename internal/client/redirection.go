@@ -9,6 +9,7 @@ import (
 )
 
 func ProxyRequest(w http.ResponseWriter, r *http.Request, targetURL string) (int, error) {
+	log.Printf("[proxy] forwarding %s %s", r.Method, targetURL)
 
 	req, err := http.NewRequestWithContext(r.Context(), r.Method, targetURL, r.Body)
 

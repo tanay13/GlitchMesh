@@ -49,3 +49,13 @@ run: build
 ## Clean build artifacts
 clean:
 	rm -rf bin/ coverage.out coverage.html
+
+## Local distributed lab (Docker Compose)
+lab-up:
+	cd lab && docker compose up --build
+
+lab-down:
+	cd lab && docker compose down
+
+lab-traffic:
+	go run ./lab/traffic-gen/main.go -url http://localhost:8080/api/feed -concurrency 5 -count 50

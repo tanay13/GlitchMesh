@@ -1,0 +1,15 @@
+# Example fault config for feed-service latency experiment.
+# Copy to lab/proxy.yaml and restart glitchmesh:
+#   docker compose restart glitchmesh
+
+service:
+  - name: feed-service
+    url: http://feed-service:8081/
+    fault:
+      enabled: true
+      probability: 0
+      priority:
+        - latency
+      types:
+        latency:
+          delay: 500

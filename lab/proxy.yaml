@@ -1,0 +1,18 @@
+service:
+  - name: feed-service
+    url: http://feed-service:8081/
+    fault:
+      enabled: true
+      probability: 0
+      priority:
+        - latency
+      types:
+        latency:
+          delay: 5000
+        error:
+          statuscode: 500
+          message: injected error
+        timeout:
+          timeoutduration: 3000
+          statuscode: 504
+          message: injected timeout
