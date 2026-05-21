@@ -20,27 +20,28 @@ test-verbose:
 
 ## Run only fault injection tests
 test-faults:
-	go test -v -race ./internal/domain/faults/...
+	go test -v -race ./internal/dataplane/faults/...
 
 ## Run only metrics tests
 test-metrics:
-	go test -v -race ./internal/metrics/...
+	go test -v -race ./internal/dataplane/metrics/...
 
 ## Run only router integration tests
 test-router:
-	go test -v -race ./internal/router/...
+	go test -v -race ./internal/dataplane/server/...
 
 ## Run only e2e multi-fault scenario tests
 test-e2e:
-	go test -v -race -run TestE2E ./internal/router/...
+	go test -v -race -run TestE2E ./internal/dataplane/server/...
 
 ## Static analysis
 vet:
 	go vet ./...
 
-## Build the binary
+## Build binaries
 build:
 	go build -o bin/glitchmesh ./cmd/glitchmesh
+	go build -o bin/planner ./cmd/planner
 
 ## Run the server
 run: build

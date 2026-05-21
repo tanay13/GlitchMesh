@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/tanay13/GlitchMesh/internal/commands"
-	"github.com/tanay13/GlitchMesh/internal/config"
+	"github.com/tanay13/GlitchMesh/internal/controlplane/cli"
+	"github.com/tanay13/GlitchMesh/internal/controlplane/config"
 )
 
 func main() {
@@ -29,7 +29,7 @@ func main() {
 	cmdName := cliArguments[0]
 	args := cliArguments[1:]
 
-	for _, cmd := range commands.RegisteredCommands {
+	for _, cmd := range cli.RegisteredCommands {
 		if cmd.Name() == cmdName {
 			if err := cmd.Execute(args); err != nil {
 				fmt.Println("Error:", err)
