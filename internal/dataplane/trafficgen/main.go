@@ -1,7 +1,6 @@
-package main
+package trafficgen
 
 import (
-	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -10,38 +9,44 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/tanay13/GlitchMesh/internal/shared/models"
 )
 
-func main() {
-	url := flag.String("url", "http://localhost:8080/api/feed", "target URL (gateway entrypoint)")
-	concurrency := flag.Int("concurrency", 5, "number of concurrent workers")
-	count := flag.Int("count", 50, "total requests to send")
-	timeout := flag.Duration("timeout", 30*time.Second, "per-request timeout")
-	flag.Parse()
+func GenerateTraffic(options models.Options) {
 
-	if *concurrency < 1 {
+	concurrency := options.Concurrency
+	count := options.Count
+	timeout := options.Timeout
+	url := options.Url
+
+	if url == "" {
+		log.Fatal("Url not passed in traffic generation command")
+	}
+
+	if concurrency < 1 {
 		log.Fatal("concurrency must be >= 1")
 	}
-	if *count < 1 {
+	if count < 1 {
 		log.Fatal("count must be >= 1")
 	}
 
-	client := &http.Client{Timeout: *timeout}
+	client := &http.Client{Timeout: timeout}
 
 	var okCount, errCount atomic.Int64
-	jobs := make(chan int, *count)
+	jobs := make(chan int, count)
 	var wg sync.WaitGroup
 
-	log.Printf("[traffic-gen] url=%s concurrency=%d count=%d", *url, *concurrency, *count)
+	log.Printf("[traffic-gen] url=%s concurrency=%d count=%d", url, concurrency, count)
 	start := time.Now()
 
-	for i := 0; i < *concurrency; i++ {
+	for i := 0; i < concurrency; i++ {
 		wg.Add(1)
 		go func(workerID int) {
 			defer wg.Done()
 			for id := range jobs {
 				reqStart := time.Now()
-				resp, err := client.Get(*url)
+				resp, err := client.Get(url)
 				elapsed := time.Since(reqStart)
 
 				if err != nil {
@@ -64,7 +69,7 @@ func main() {
 		}(i + 1)
 	}
 
-	for i := 1; i <= *count; i++ {
+	for i := 1; i <= count; i++ {
 		jobs <- i
 	}
 	close(jobs)
@@ -72,12 +77,12 @@ func main() {
 
 	total := time.Since(start)
 	fmt.Printf("\n--- traffic-gen summary ---\n")
-	fmt.Printf("url:         %s\n", *url)
-	fmt.Printf("total:       %d\n", *count)
+	fmt.Printf("url:         %s\n", url)
+	fmt.Printf("total:       %d\n", count)
 	fmt.Printf("success:     %d\n", okCount.Load())
 	fmt.Printf("errors:      %d\n", errCount.Load())
 	fmt.Printf("duration:    %s\n", total)
-	fmt.Printf("req/sec:     %.2f\n", float64(*count)/total.Seconds())
+	fmt.Printf("req/sec:     %.2f\n", float64(count)/total.Seconds())
 
 	if errCount.Load() > 0 {
 		os.Exit(1)
