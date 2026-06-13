@@ -54,7 +54,7 @@ curl http://localhost:9000/metrics
 With the stack running:
 
 ```bash
-go run ./traffic-gen/main.go -url http://localhost:8080/api/feed -concurrency 5 -count 50
+go run ../cmd/trafficgen/main.go -url http://localhost:8080/api/feed -concurrency 5 -count 50
 ```
 
 Flags:
@@ -84,8 +84,8 @@ Example: 500ms latency on every request to `feed-service` (see `scenarios/latenc
 
 ## End-to-End Experiment Flow
 
-1. **Planner** (runs locally, outside Docker) generates experiment YAML.
-2. Copy accepted YAML into `lab/proxy.yaml`.
+1. Define your experiment scenarios in a config YAML file (or copy/modify one from `lab/scenarios/`).
+2. Copy the YAML config into `lab/proxy.yaml`.
 3. `docker compose restart glitchmesh` — runtime reloads config at startup.
 4. Run `traffic-gen` against gateway.
 5. Observe latency/errors in traffic-gen output and container logs.

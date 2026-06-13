@@ -41,7 +41,6 @@ vet:
 ## Build binaries
 build:
 	go build -o bin/glitchmesh ./cmd/glitchmesh
-	go build -o bin/planner ./cmd/planner
 
 ## Run the server
 run: build
@@ -59,4 +58,4 @@ lab-down:
 	cd lab && docker compose down
 
 lab-traffic:
-	go run ./lab/traffic-gen/main.go -url http://localhost:8080/api/feed -concurrency 5 -count 50
+	go run ./cmd/trafficgen/main.go -url http://localhost:8080/api/feed -concurrency 5 -count 50
