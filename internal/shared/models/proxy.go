@@ -22,4 +22,6 @@ type FaultConfig struct {
 	Message         string
 	Delay           int
 	TimeoutDuration int
+	DropRate        float64 `yaml:"droprate"`
+	DropInterval    int     `yaml:"dropinterval"`
 }

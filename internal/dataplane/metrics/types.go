@@ -19,6 +19,7 @@ func NewFaultMetrics() *FaultMetrics {
 			constants.ERROR:                 0,
 			constants.LATENCY:               0,
 			constants.TIMEOUT:               0,
+			constants.CONNECTION_DROP:       0,
 		},
 	}
 }
@@ -54,5 +55,6 @@ func (fm *FaultMetrics) Snapshot() models.FaultsMetricsSnapshot {
 		LatencyCount:        fm.Faults[constants.LATENCY],
 		TimeoutCount:        fm.Faults[constants.TIMEOUT],
 		ErrorCount:          fm.Faults[constants.ERROR],
+		ConnectionDropCount: fm.Faults[constants.CONNECTION_DROP],
 	}
 }

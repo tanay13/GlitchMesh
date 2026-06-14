@@ -13,4 +13,5 @@ type FaultsMetricsSnapshot struct {
 	LatencyCount        int `json:"latency_count"`
 	TimeoutCount        int `json:"timeout_count"`
 	ErrorCount          int `json:"error_count"`
+	ConnectionDropCount int `json:"connection_drop_count"`
 }

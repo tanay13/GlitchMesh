@@ -6,6 +6,7 @@ service:
       probability: 0
       priority:
         - latency
+        - connection_drop
       types:
         latency:
           delay: 5000
@@ -16,3 +17,5 @@ service:
           timeoutduration: 3000
           statuscode: 504
           message: injected timeout
+        connection_drop:
+          droprate: 0.8

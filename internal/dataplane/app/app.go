@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"log"
 	"os"
 
@@ -22,6 +23,9 @@ func NewApp() *App {
 
 	faultService := faults.NewFaultService(faultInjector, logger)
 	proxyService := proxy.NewProxyService(faultService, logger)
+
+	// Start background dropper loop for connection drop faults
+	faults.StartBackgroundDropper(context.Background())
 
 	return &App{
 		proxyService,

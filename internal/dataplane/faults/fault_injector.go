@@ -57,9 +57,10 @@ func shouldApply(faultConfig models.Fault) bool {
 // and returns them ordered by the configured priority.
 func buildFaultList(faultConfig models.Fault) []Fault {
 	faultMap := map[string]Fault{
-		constants.ERROR:   &ErrorFault{Config: &faultConfig},
-		constants.LATENCY: &LatencyFault{Config: &faultConfig},
-		constants.TIMEOUT: &TimeoutFault{Config: &faultConfig},
+		constants.ERROR:           &ErrorFault{Config: &faultConfig},
+		constants.LATENCY:         &LatencyFault{Config: &faultConfig},
+		constants.TIMEOUT:         &TimeoutFault{Config: &faultConfig},
+		constants.CONNECTION_DROP: &ConnectionDropFault{Config: &faultConfig},
 	}
 
 	faultList := make([]Fault, 0, len(faultConfig.Priority))

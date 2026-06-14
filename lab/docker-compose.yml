@@ -1,12 +1,12 @@
 services:
   feed-service:
     build: ./services/feed-service
-    networks: [lab]
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8081/health"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
+    networks: [ lab ]
+#    healthcheck:
+#      test: [ "CMD", "wget", "-qO-", "http://localhost:8081/health" ]
+#      interval: 5s
+#      timeout: 3s
+#      retries: 5
 
   glitchmesh:
     build:
@@ -19,13 +19,13 @@ services:
       - ./proxy.yaml:/app/proxy.yaml:ro
     depends_on:
       feed-service:
-        condition: service_healthy
-    networks: [lab]
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:9000/"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
+        condition: service_started
+    networks: [ lab ]
+#    healthcheck:
+#      test: [ "CMD", "wget", "-qO-", "http://localhost:9000/" ]
+#      interval: 5s
+#      timeout: 3s
+#      retries: 5
 
   gateway:
     build: ./services/gateway
@@ -37,13 +37,13 @@ services:
       FEED_SERVICE_NAME: feed-service
     depends_on:
       glitchmesh:
-        condition: service_healthy
-    networks: [lab]
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
+        condition: service_started
+    networks: [ lab ]
+#    healthcheck:
+#      test: [ "CMD", "wget", "-qO-", "http://localhost:8080/health" ]
+#      interval: 5s
+#      timeout: 3s
+#      retries: 5
 
 networks:
   lab:

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -53,8 +54,10 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 
 	targetService := urlParts[0]
 
+	ctx := context.WithValue(r.Context(), constants.SERVICE_NAME_CTX_KEY, targetService)
+
 	start := time.Now()
-	response, err := appInstance.ProxyService.HandleRequest(r.Context(), urlParts)
+	response, err := appInstance.ProxyService.HandleRequest(ctx, urlParts)
 	elapsed := time.Since(start)
 	if err != nil {
 		log.Printf("[Target: %s, Time Taken: %s , error: %v]", targetService, elapsed, err.Error())
@@ -81,7 +84,7 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 		targetUrl += "?" + r.URL.RawQuery
 	}
 
-	proxy.ProxyRequest(w, r, targetUrl)
+	proxy.ProxyRequest(w, r.WithContext(ctx), targetUrl)
 
 	log.Printf("[Target: %s, Time Taken: %s]", targetService, elapsed)
 }

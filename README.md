@@ -41,13 +41,15 @@ service:
     url: "http://localhost:8080/"
     fault:
       enabled: true
-      priority: ["error", "latency"]
+      priority: ["error", "latency", "connection_drop"]
       types:
         latency:
           delay: 5000  # 5 second delay
         error:
           statuscode: 500
           message: "something went really wrong!!"
+        connection_drop:
+          droprate: 0.4
 ```
 
 ### Usage
@@ -64,7 +66,7 @@ curl http://localhost:9000/redirect/service-one/api/users
 
 **Network Faults**
   - [x] Connection Timeouts - Simulate services that accept connections but never respond
-  - [ ] Connection Drop - Randomly Dropping connections mid request
+  - [x] Connection Drop - Randomly Dropping connections mid request
   - [ ] Bandwidth Throttling - Limiting throughput to simulate network congestion
 
 **Response Manupulation**
