@@ -9,10 +9,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tanay13/GlitchMesh/internal/controlplane/config"
 	"github.com/tanay13/GlitchMesh/internal/dataplane/app"
+	"github.com/tanay13/GlitchMesh/internal/dataplane/metrics"
 	"github.com/tanay13/GlitchMesh/internal/dataplane/proxy"
 	"github.com/tanay13/GlitchMesh/internal/shared/constants"
-	"github.com/tanay13/GlitchMesh/internal/dataplane/metrics"
 	"github.com/tanay13/GlitchMesh/internal/shared/models"
 	"github.com/tanay13/GlitchMesh/internal/shared/utils"
 )
@@ -53,6 +54,7 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	targetService := urlParts[0]
+	configGen := config.GetConfigGeneration()
 
 	ctx := context.WithValue(r.Context(), constants.SERVICE_NAME_CTX_KEY, targetService)
 
@@ -60,7 +62,8 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 	response, err := appInstance.ProxyService.HandleRequest(ctx, urlParts)
 	elapsed := time.Since(start)
 	if err != nil {
-		log.Printf("[Target: %s, Time Taken: %s , error: %v]", targetService, elapsed, err.Error())
+		log.Printf("[Target: %s, Time Taken: %s, config_gen: %d, error: %v]",
+			targetService, elapsed, configGen, err.Error())
 		utils.WriteJSONError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -74,7 +77,8 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 
 		utils.WriteJSONError(w, response.StatusCode, errorMsg)
 
-		log.Printf("[Target: %s, Time Taken: %s, Fault: %s]", targetService, elapsed, response.Message)
+		log.Printf("[Target: %s, Time Taken: %s, config_gen: %d, Fault: %s]",
+			targetService, elapsed, configGen, response.Message)
 		return
 	}
 
@@ -86,5 +90,5 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 
 	proxy.ProxyRequest(w, r.WithContext(ctx), targetUrl)
 
-	log.Printf("[Target: %s, Time Taken: %s]", targetService, elapsed)
+	log.Printf("[Target: %s, Time Taken: %s, config_gen: %d]", targetService, elapsed, configGen)
 }

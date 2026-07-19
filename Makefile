@@ -59,3 +59,32 @@ lab-down:
 
 lab-traffic:
 	go run ./cmd/trafficgen/main.go -url http://localhost:8080/api/feed -concurrency 5 -count 50
+
+## Phase 1: Admin API tests only
+test-adminapi:
+	go test -v -race ./internal/controlplane/adminapi/...
+
+## Phase 1: Config hot-reload + override layer tests
+test-config:
+	go test -v -race ./internal/controlplane/config/...
+
+## Phase 1: Validation model tests
+test-models:
+	go test -v -race ./internal/shared/models/...
+
+## Phase 1: Hot-reload e2e tests
+test-hotreload:
+	go test -v -race -run TestHotReload ./internal/dataplane/server/...
+
+## Phase 1: All Phase 1 tests together
+test-phase1:
+	go test -v -race ./internal/shared/models/... ./internal/controlplane/config/... ./internal/controlplane/adminapi/... ./internal/dataplane/server/...
+
+## Phase 1: curl example — list services (set ADMIN_TOKEN env var first if auth is enabled)
+admin-demo:
+	@echo "=== GET /admin/services ==="
+	curl -s -H "Authorization: Bearer $${ADMIN_TOKEN}" http://localhost:9000/admin/services | python3 -m json.tool || true
+	@echo ""
+	@echo "=== GET /admin/config/diff ==="
+	curl -s -H "Authorization: Bearer $${ADMIN_TOKEN}" http://localhost:9000/admin/config/diff | python3 -m json.tool || true
+

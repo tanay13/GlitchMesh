@@ -23,15 +23,12 @@ func NewProxyService(faultService *faults.FaultService, logger *log.Logger) *Pro
 }
 
 func (s *ProxyService) HandleRequest(ctx context.Context, urlParts []string) (*faults.FaultResponse, error) {
-
-	proxyConfig := config.GetProxyConfig()
-
 	serviceName, endpoint, err := utils.ParseURLParts(urlParts)
 	if err != nil {
 		return nil, fmt.Errorf("invalid request URL: %w", err)
 	}
 
-	serviceConfig := utils.GetServiceConfig(serviceName, proxyConfig)
+	serviceConfig := config.GetEffectiveServiceConfig(serviceName)
 
 	if serviceConfig == nil {
 		return nil, fmt.Errorf("service '%s' not found in the proxy configuration", serviceName)
