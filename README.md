@@ -67,6 +67,8 @@ curl http://localhost:9000/redirect/service-one/api/users
 **Network Faults**
   - [x] Connection Timeouts - Simulate services that accept connections but never respond
   - [x] Connection Drop - Randomly Dropping connections mid request
+    - Note: In idemptotent requests the http client will retry to establish the connection so eventually even after the connection drop the request can be successful.
+    - But in non idempotent requests the request will fail as the client doesnt retry. Example: POST request
   - [ ] Bandwidth Throttling - Limiting throughput to simulate network congestion
 
 **Response Manupulation**
