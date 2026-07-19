@@ -19,6 +19,11 @@ type feedItem struct {
 	Content string `json:"content"`
 }
 
+type feed struct {
+	ID    int    `json:"id"`
+	Title string `json:"title"`
+}
+
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -28,6 +33,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", healthHandler)
 	mux.HandleFunc("/feed", feedHandler)
+	mux.HandleFunc("/feed/create", createNewFeed)
 
 	addr := ":" + port
 	log.Printf("[feed-service] listening on %s", addr)
@@ -41,7 +47,6 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 func feedHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("[feed-service] feed request from %s", r.RemoteAddr)
-
 	resp := feedResponse{
 		At: time.Now().UTC().Format(time.RFC3339),
 		Items: []feedItem{
@@ -54,6 +59,21 @@ func feedHandler(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.Printf("[feed-service] encode error: %v", err)
 	}
+}
+
+func createNewFeed(w http.ResponseWriter, r *http.Request) {
+	log.Printf("[feed-service] create new feed request from %s", r.RemoteAddr)
+	// time.Sleep(10 * time.Second)
+	var newFeed feed
+	if err := json.NewDecoder(r.Body).Decode(&newFeed); err != nil {
+		log.Printf("[feed-service] decode error: %v", err)
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	log.Print("[feed-service] new feed created ", newFeed)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(newFeed)
 }
 
 func logRequests(next http.Handler) http.Handler {
